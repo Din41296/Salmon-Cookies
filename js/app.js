@@ -1,4 +1,5 @@
 'use strict';
+
 let hoursOpen = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm'];
 
 
@@ -16,16 +17,11 @@ function Cookie(name, min, max, avg, img) {
   cookies.push(this);
 }
 
-let seattle = new Cookie('Seattle', 23, 65, 6.3, 'img/fish.PNG');
-let tokyo = new Cookie('Tokyo', 3, 24, 1.2, 'img/fish.PNG');
-let dubai = new Cookie('Dubai', 11, 38, 3.7, 'img/fish.PNG');
-let paris = new Cookie('Paris', 20, 38, 2.3, 'img/fish.PNG');
-let lima = new Cookie('Lima', 2, 16, 4.6, 'img/fish.PNG');
 
 Cookie.prototype.randCust = function () {
   for (let i = 0; i < hoursOpen.length; i++) {
-    let min = Math.ceil(min);
-    let max = Math.floor(max);
+    let min = Math.ceil(this.min);
+    let max = Math.floor(this.max);
     let randCust = Math.floor(Math.random() * (max - min + 1) + min);
     this.randCust.push(randCust);
   }
@@ -95,25 +91,21 @@ function createTableHeader() {
 
 
 
-
-
-
 function createTableFooter() {
   let tfootEl = document.createElement('tfoot');
+  let tdEl = document.createElement('td');
+  tdEl.textContent = 'Totals';
+  tfootEl.appendChild(tdEl);
   tableEl.appendChild(tfootEl);
-  let tfEl = document.createElement('tf');
-  tfootEl.appendChild(tfEl);
-  let trEl = document.createElement('tr');
-  trEl.textContent = 'Total';
-  tfEl.appendChild(trEl);
   let megaTotal = 0;
+
   for (let h = 0; h < hoursOpen.length; h++) {
     let tdEl = document.createElement('td');
     let sum = 0;
 
-    for (let s = 0; s < cookies.length; s++) {
+    for (let i=0; i < cookies.length; i++) {
 
-      sum = sum + cookies[s].avgCookiesPerHour[h];
+      sum = sum + cookies[i].avgCookiesPerH[h];
     }
     megaTotal += sum;
     tdEl.textContent = sum;
@@ -122,9 +114,15 @@ function createTableFooter() {
   let totalTdEl = document.createElement('td');
   totalTdEl.textContent = megaTotal;
   tfootEl.appendChild(totalTdEl);
-
 }
 
+
+
+let seattle = new Cookie('Seattle', 23, 65, 6.3);
+let tokyo = new Cookie('Tokyo', 3, 24, 1.2);
+let dubai = new Cookie('Dubai', 11, 38, 3.7);
+let paris = new Cookie('Paris', 20, 38, 2.3);
+let lima = new Cookie('Lima', 2, 16, 4.6);
 
 
 
@@ -136,6 +134,21 @@ paris.render();
 lima.render();
 createTableFooter();
 
+let myForm=document.getElementById('myForm');
+myForm.addEventListener('submit',addShop);
+function addShop(event){
+  event.preventDefault();
+  let shopName = event.target.shopName.value;
+  let min= event.target.min.value;
+  let max= event.target.max.value;
+  let avg = event.target.avg.value;
+
+  let newStore = new Cookie(shopName,min,max,avg);
+  newStore.randCust();
+  newStore.avgCookiePerHour();
+  newStore.render();
+
+}
 
 
 
