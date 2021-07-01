@@ -1,5 +1,15 @@
+*{
+    box-sizing:border-box;
+}
+
+
+body{
+    background-color:brown;
+}
+
+
 table,tr,th,tfoot,td{
-    border:1px solid grey;
+    border:1px solid aqua;
 }
 h1{
     font-size:50px;
