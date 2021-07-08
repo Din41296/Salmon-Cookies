@@ -4,7 +4,7 @@ let hoursOpen = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm
 
 
 
-let cookies = [];
+let shops = [];
 function Cookie(name, min, max, avg, img) {
   this.name = name;
   this.min = min;
@@ -12,13 +12,13 @@ function Cookie(name, min, max, avg, img) {
   this.avg = avg;
   this.img = img;
   this.randCust = [],
-  this.avgCookiePerHour = [],
-  this.total = 0,
-  cookies.push(this);
+  this.cookiesPerHour = [],
+  this.dailyTotal = 0,
+  shops.push(this);
 }
 
 
-Cookie.prototype.randCust = function () {
+Cookie.prototype.generateRandCust = function () {
   for (let i = 0; i < hoursOpen.length; i++) {
     let min = Math.ceil(this.min);
     let max = Math.floor(this.max);
@@ -27,34 +27,37 @@ Cookie.prototype.randCust = function () {
   }
 };
 
-Cookie.prototype.avgCookiePerHour = function () {
+Cookie.prototype.generateCookiesPerHour = function () {
   for (let i = 0; i < hoursOpen.length; i++) {
-    let avgCookiePerHour = Math.floor(this.randCust[i] * this.avgCookiePerCus);
-    this.avgCookiePerHour.push(avgCookiePerHour);
-    this.total += this.avgCookiePerHour[i];
+    let cookie = Math.floor(this.randCust[i] * this.avg);
+    this.cookiesPerHour.push(cookie);
+    this.dailyTotal += this.cookiesPerHour[i];
   }
 };
 
 
 
 let container = document.getElementById('container');
+// let container = document.getElementById('container');
+console.log(container);
 let tableEl = document.createElement('Table');
 container.appendChild(tableEl);
+
 Cookie.prototype.render = function () {
   let trEl = document.createElement('tr');
+  tableEl.appendChild(trEl);
   let tdEl = document.createElement('td');
-  tdEl.textContent = this.name;
   trEl.appendChild(tdEl);
+  tdEl.textContent = this.name;
   for (let i = 0; i < hoursOpen.length; i++) {
     let tdEl = document.createElement('td');
-    tdEl.textContent = this.avgCookiePerHour[i];
+    tdEl.textContent = this.cookiesPerHour[i];
     trEl.appendChild(tdEl);
   }
 
   let tdTotalEl = document.createElement('td');
-  tdTotalEl.textContent = this.total;
+  tdTotalEl.textContent = this.dailyTotal;
   trEl.appendChild(tdTotalEl);
-  tableEl.appendChild(trEl);
 
 };
 
@@ -97,22 +100,22 @@ function createTableFooter() {
   tdEl.textContent = 'Totals';
   tfootEl.appendChild(tdEl);
   tableEl.appendChild(tfootEl);
-  let megaTotal = 0;
+  let totalOfTotal = 0;
 
   for (let h = 0; h < hoursOpen.length; h++) {
     let tdEl = document.createElement('td');
     let sum = 0;
 
-    for (let i=0; i < cookies.length; i++) {
+    for (let i = 0; i < shops.length; i++) {
 
-      sum = sum + cookies[i].avgCookiesPerH[h];
+      sum = sum + shops[i].cookiesPerHour[h];
     }
-    megaTotal += sum;
+    totalOfTotal += sum;
     tdEl.textContent = sum;
     tfootEl.appendChild(tdEl);
   }
   let totalTdEl = document.createElement('td');
-  totalTdEl.textContent = megaTotal;
+  totalTdEl.textContent = totalOfTotal;
   tfootEl.appendChild(totalTdEl);
 }
 
@@ -123,31 +126,49 @@ let tokyo = new Cookie('Tokyo', 3, 24, 1.2);
 let dubai = new Cookie('Dubai', 11, 38, 3.7);
 let paris = new Cookie('Paris', 20, 38, 2.3);
 let lima = new Cookie('Lima', 2, 16, 4.6);
+// console.log(seattle.randCust);
+// seattle.generateRandCust();
+// seattle.generateCookiesPerHour();
+// console.log(seattle);
 
 
 
 createTableHeader();
-seattle.render();
-tokyo.render();
-dubai.render();
-paris.render();
-lima.render();
-createTableFooter();
+for (let i = 0; i < shops.length; i++) {
+  shops[i].generateRandCust();
+  shops[i].generateCookiesPerHour();
+  shops[i].render();
+}
 
-let myForm=document.getElementById('myForm');
-myForm.addEventListener('submit',addShop);
-function addShop(event){
+
+createTableFooter();
+deleteRow();
+
+
+function deleteRow() {
+  let rowCount = tableEl.rows.length;
+  console.log(rowCount);
+  tableEl.deleteRow(-1);
+}
+
+let myForm = document.getElementById('myForm');
+myForm.addEventListener('submit', addShop);
+function addShop(event) {
   event.preventDefault();
   let shopName = event.target.shopName.value;
-  let min= event.target.min.value;
-  let max= event.target.max.value;
+  let min = event.target.min.value;
+  let max = event.target.max.value;
   let avg = event.target.avg.value;
+  console.log(shopName, min, max, avg);
 
-  let newStore = new Cookie(shopName,min,max,avg);
-  newStore.randCust();
-  newStore.avgCookiePerHour();
+  let newStore = new Cookie(shopName, min, max, avg);
+  newStore.generateRandCust();
+  newStore.generateCookiesPerHour();
   newStore.render();
-
+  
+  createTableFooter();
+  console.log(newStore);
+  
 }
 
 
